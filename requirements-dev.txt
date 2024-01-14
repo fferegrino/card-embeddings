@@ -1,0 +1,5 @@
+black
+jupyter
+jupyterlab
+jupytext
+matplotlib

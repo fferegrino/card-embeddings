@@ -1,0 +1,4 @@
+annoy
+numpy
+scipy
+openai
