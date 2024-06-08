@@ -1,4 +1,5 @@
 annoy
 numpy
 scipy
-openai
+streamlit
+requests

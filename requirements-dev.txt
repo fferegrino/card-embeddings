@@ -1,5 +1,7 @@
 black
+isort
 jupyter
 jupyterlab
 jupytext
 matplotlib
+openai
