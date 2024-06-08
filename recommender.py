@@ -6,7 +6,11 @@ import requests
 import streamlit as st
 from annoy import AnnoyIndex
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    layout="wide",
+    page_title="Yu-Gi-Oh! Card Recommender",
+    page_icon="🃏",
+)
 
 STORAGE = os.getenv("STORAGE")
 ANNOY_INDEX_FILE = "card-embeddings.ann"
@@ -99,16 +103,20 @@ else:
     similar_card_ids = similar_card_ids[:5]
     scores = scores[:5]
 
-    st.write("Here are some similar cards:")
+    st.subheader("Here are some similar cards:")
     columns = st.columns(len(similar_card_ids) + 1)
 
     with columns[0]:
         # passcode = id_to_passcode[str(similar_card_ids[0])]
-        st.subheader("Query Card:")
+        st.markdown("#### Query Card:")
         st.image(cards[query_card_passcode]["image_url"])
 
     for similar_card_id, score, column in zip(similar_card_ids, scores, columns[1:]):
         with column:
             passcode = id_to_passcode[str(similar_card_id)]
-            st.subheader(f"Distance {score:.3f}")
+            st.markdown(f"#### Distance {score:.3f}")
             st.image(cards[passcode]["image_url"])
+
+st.markdown("Want to learn more about this repository? **[check out the repository](https://github.com/fferegrino/card-embeddings)**. Follow me on **[Twitter](https://twitter.com/feregri_no)** or [Threads](https://threads.net/feregri_no).")
+st.divider()
+st.caption("The literal and graphical information presented on this site about Yu-Gi-Oh!, including card images, the attribute, level/rank and type symbols, and card text, is copyright 4K Media Inc, a subsidiary of Konami Digital Entertainment, Inc. This website is not produced by, endorsed by, supported by, or affiliated with 4k Media or Konami Digital Entertainment.")
