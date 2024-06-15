@@ -19,31 +19,31 @@ EMBEDDING_SIZE = 50
 
 @st.cache_resource
 def load_vector_database():
-    # import requests
+    import requests
 
-    # url = f"{STORAGE}/card-embeddings.ann"
-    # r = requests.get(url)
-    # with open(ANNOY_INDEX_FILE, "wb") as f:
-    #     f.write(r.content)
+    url = f"{STORAGE}/card-embeddings.ann"
+    r = requests.get(url)
+    with open(ANNOY_INDEX_FILE, "wb") as f:
+        f.write(r.content)
 
     ann = AnnoyIndex(EMBEDDING_SIZE, "angular")
-    ann.load("data/card-embeddings.ann")
+    ann.load(ANNOY_INDEX_FILE)
 
     return ann
 
 
 @st.cache_resource
 def load_cards():
-    # import requests
+    import requests
 
-    # url = f"{STORAGE}/cards.csv"
-    # r = requests.get(url)
+    url = f"{STORAGE}/cards.csv"
+    r = requests.get(url)
 
-    # with open("cards.csv", "wb") as f:
-    #     f.write(r.content)
+    with open("cards.csv", "wb") as f:
+        f.write(r.content)
 
     cards = {}
-    with open("data/cards.csv", "r") as f:
+    with open("cards.csv", "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
             cards[row["id"]] = row
@@ -53,22 +53,22 @@ def load_cards():
 
 @st.cache_resource
 def load_supporting_dictionsaries():
-    # url_passcode_to_id = f"{STORAGE}/passcode_to_id.json"
-    # r = requests.get(url_passcode_to_id)
-    # with open("passcode_to_id.json", "wb") as f:
-    #     f.write(r.content)
+    url_passcode_to_id = f"{STORAGE}/passcode_to_id.json"
+    r = requests.get(url_passcode_to_id)
+    with open("passcode_to_id.json", "wb") as f:
+        f.write(r.content)
 
     passcode_to_id = {}
-    with open("data/passcode_to_id.json", "r") as f:
+    with open("passcode_to_id.json", "r") as f:
         passcode_to_id = json.load(f)
 
-    # url_id_to_passcode = f"{STORAGE}/id_to_passcode.json"
-    # r = requests.get(url_id_to_passcode)
-    # with open("id_to_passcode.json", "wb") as f:
-    #     f.write(r.content)
+    url_id_to_passcode = f"{STORAGE}/id_to_passcode.json"
+    r = requests.get(url_id_to_passcode)
+    with open("id_to_passcode.json", "wb") as f:
+        f.write(r.content)
 
     id_to_passcode = {}
-    with open("data/id_to_passcode.json", "r") as f:
+    with open("id_to_passcode.json", "r") as f:
         id_to_passcode = json.load(f)
 
     return passcode_to_id, id_to_passcode
