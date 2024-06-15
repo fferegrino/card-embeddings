@@ -1,7 +1,7 @@
 import csv
 import json
 import os
-
+import random
 import requests
 import streamlit as st
 from annoy import AnnoyIndex
@@ -19,31 +19,31 @@ EMBEDDING_SIZE = 50
 
 @st.cache_resource
 def load_vector_database():
-    import requests
+    # import requests
 
-    url = f"{STORAGE}/card-embeddings.ann"
-    r = requests.get(url)
-    with open(ANNOY_INDEX_FILE, "wb") as f:
-        f.write(r.content)
+    # url = f"{STORAGE}/card-embeddings.ann"
+    # r = requests.get(url)
+    # with open(ANNOY_INDEX_FILE, "wb") as f:
+    #     f.write(r.content)
 
     ann = AnnoyIndex(EMBEDDING_SIZE, "angular")
-    ann.load(ANNOY_INDEX_FILE)
+    ann.load("data/card-embeddings.ann")
 
     return ann
 
 
 @st.cache_resource
 def load_cards():
-    import requests
+    # import requests
 
-    url = f"{STORAGE}/cards.csv"
-    r = requests.get(url)
+    # url = f"{STORAGE}/cards.csv"
+    # r = requests.get(url)
 
-    with open("cards.csv", "wb") as f:
-        f.write(r.content)
+    # with open("cards.csv", "wb") as f:
+    #     f.write(r.content)
 
     cards = {}
-    with open("cards.csv", "r") as f:
+    with open("data/cards.csv", "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
             cards[row["id"]] = row
@@ -53,22 +53,22 @@ def load_cards():
 
 @st.cache_resource
 def load_supporting_dictionsaries():
-    url_passcode_to_id = f"{STORAGE}/passcode_to_id.json"
-    r = requests.get(url_passcode_to_id)
-    with open("passcode_to_id.json", "wb") as f:
-        f.write(r.content)
+    # url_passcode_to_id = f"{STORAGE}/passcode_to_id.json"
+    # r = requests.get(url_passcode_to_id)
+    # with open("passcode_to_id.json", "wb") as f:
+    #     f.write(r.content)
 
     passcode_to_id = {}
-    with open("passcode_to_id.json", "r") as f:
+    with open("data/passcode_to_id.json", "r") as f:
         passcode_to_id = json.load(f)
 
-    url_id_to_passcode = f"{STORAGE}/id_to_passcode.json"
-    r = requests.get(url_id_to_passcode)
-    with open("id_to_passcode.json", "wb") as f:
-        f.write(r.content)
+    # url_id_to_passcode = f"{STORAGE}/id_to_passcode.json"
+    # r = requests.get(url_id_to_passcode)
+    # with open("id_to_passcode.json", "wb") as f:
+    #     f.write(r.content)
 
     id_to_passcode = {}
-    with open("id_to_passcode.json", "r") as f:
+    with open("data/id_to_passcode.json", "r") as f:
         id_to_passcode = json.load(f)
 
     return passcode_to_id, id_to_passcode
@@ -87,7 +87,21 @@ else:
     st.title("Yu-Gi-Oh! card recommender")
     st.write("Welcome to the recommender! Please select a card to get started.")
 
-    query_card_passcode = st.selectbox("Select a card", cards.keys(), format_func=format_card)
+    cards['0'] = {'name': "Random card"}
+    id_list = list(cards.keys())
+    id_list.append('0')
+    
+
+    selected_passcode = st.query_params["card"] if "card" in st.query_params else None
+    if selected_passcode is not None:
+        query_card_passcode  = st.selectbox("Select a card", id_list, format_func=format_card, index=
+                                            id_list.index(selected_passcode))
+    else:
+        query_card_passcode = st.selectbox("Select a card", id_list, format_func=format_card, index=len(id_list)-1)
+
+    if query_card_passcode == '0':
+        query_card_passcode = random.choice(list(cards.keys()))
+
 
     card_id = passcode_to_id[query_card_passcode]
     query_card_embedding = ann.get_item_vector(card_id)
